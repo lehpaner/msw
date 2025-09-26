@@ -17,6 +17,7 @@ import { DnDTypes } from './model/DnDTypes';
 
 import "./ui/ReactJSchedule.css";
 import SchedulerGrid from './components/SchedulerGrid';
+import SchedulerRows from './helper/SchedulerRows';
 
 const initialState = {
   showScheduler: false,
@@ -24,6 +25,7 @@ const initialState = {
 };
 
 function reducer(state, action) {
+  console.log('-----------------------------------REDUCER---------------------------');
   switch (action.type) {
     case 'INITIALIZE':
       return { showScheduler: true, viewModel: action.payload };
@@ -37,12 +39,20 @@ let schedulerData;
 
 function ReactJSchedule(props) {
     const { 
-        databaseDataSource,
-        reactjscheduleType, 
-        reactjscheduleValue, 
-        valueAttribute, 
+        headerTitleAttibute,
+        headerTitleValue,
+
+        scheduleDataSource,
+        scheduleRowsDataSource,
+
+        calendarDate,
+        calendarDateFormat,
+        calendarView,
+        constraintsRender,
+
         onClickAction,
         onNewItemAction,
+
         style, 
         bootstrapStyle 
     } = props;
@@ -61,24 +71,38 @@ function ReactJSchedule(props) {
         }
     }, [onNewItemAction]);
     //-------------------------------------------------------------------------------------------------
+    const items = props.scheduleDataSource.items??[];
+
     const [state, dispatch] = useReducer(reducer, initialState);
     const [taskDndSource, setTaskDndSource] = useState(new DnDSource(props => props.task, TaskItem, true, DnDTypes.TASK));
     const [resourceDndSource, setResourceDndSource] = useState(new DnDSource(props => props.resource, ResourceItem, true, DnDTypes.RESOURCE));
+
     //-------------------------------------------------------------------------------------------------
+    // INIT SCHEDULE DATA CLASS -> CONTROL OF WIDGET
     //-------------------------------------------------------------------------------------------------
     useEffect(() => {
-    console.log('----------Creating Scheduler Data---------', buildViewData(databaseDataSource, databaseDataSource));
-    schedulerData = new SchedulerData('2022-12-18', ViewType.Month, false, false, {
-      schedulerMaxHeight: 500,
-      besidesWidth: window.innerWidth <= 1600 ? 400 : 500,
-      views: [
-        { viewName: 'Agenda View', viewType: ViewType.Month, showAgenda: true, isEventPerspective: false },
-        { viewName: 'Resource View', viewType: ViewType.Month, showAgenda: false, isEventPerspective: false },
-        { viewName: 'Task View', viewType: ViewType.Month, showAgenda: false, isEventPerspective: true },
-      ],
-    });
+    console.log('------------- SCHEDULER VARS START ------------');
+    console.log('GENERAL --- ', headerTitleAttibute, headerTitleValue);
+    console.log('DATASOURCE ---', scheduleDataSource, scheduleRowsDataSource);
+    console.log('CALENDAR SETTINGS ---', calendarDate, calendarDateFormat, calendarView, constraintsRender);
+
+    schedulerData = new SchedulerData(
+      calendarDate, 
+      getViewType(calendarView), 
+      false, 
+      false, 
+      {
+        schedulerMaxHeight: 500,
+        besidesWidth: window.innerWidth <= 1600 ? 400 : 500,
+        views: [
+          { viewName: 'Agenda View', viewType: ViewType.Month, showAgenda: true, isEventPerspective: false },
+          { viewName: 'Resource View', viewType: ViewType.Month, showAgenda: false, isEventPerspective: false },
+          { viewName: 'Task View', viewType: ViewType.Month, showAgenda: false, isEventPerspective: true },
+        ],
+      });
+    
     schedulerData.localeDayjs.locale('en');
-    schedulerData.setResources(DemoData.resources);
+    schedulerData.setResources(buildResources(scheduleRowsDataSource?.items));
     schedulerData.setEvents(DemoData.eventsForTaskView);
 
     dispatch({ type: 'INITIALIZE', payload: schedulerData });
@@ -90,6 +114,13 @@ function ReactJSchedule(props) {
     };
   }, []);
 
+  const getViewType = (config) =>{
+    if(config==='year') return ViewType.Year;
+    if(config==='quarter') return ViewType.Quarter;
+    if(config==='month') return ViewType.Month;
+    if(config==='week') return ViewType.Week;
+    if(config==='day') return ViewType.Day;
+  }
   const buildViewData = (verticals, items)=>{
       return {
         resources:buildResources(verticals),
@@ -116,18 +147,28 @@ function ReactJSchedule(props) {
     };
 
     const buildResources = resources  => {
+      console.info('-------------------building widget rows from ------------------', resources);
+      if(resources) {
         return resources?.map(resitem=> {return buildResourceItem(resitem)});
+      } else {
+        console.info('-------------------building widget rows from DEFAULT ------------------');
+        return [
+          { id: 'r0', name: 'Resource0', title: 'Resource 0', groupOnly: true },
+          { id: 'r1', name: 'Resource1', title: 'Resource 1', parentId: 'r0' },
+          { id: 'r2', name: 'Resource2', parentId: 'r3' },
+          { id: 'r3', name: 'Resource3', parentId: 'r1' },
+          { id: 'r4', name: 'Resource4' },
+          { id: 'r5', name: 'Resource5' },
+          { id: 'r6', name: 'Resource6' },
+          { id: 'r7', name: 'Resource7' },
+        ]
+      }
+       
     };
 
     const buildResourceItem = (resitem, parent=null) => {
         return { id: 'r0', name: 'Resource0', title: 'Resource 0', groupOnly: true }
     };
-    //buildEvents((items: ObjectItem[]): CalendarEvent[] {
-    //    return items.map(item => {
-    //        return this.buildEventItem(item);
-    //    });
-    //}
-    //)
 
   const prevClick = schedulerData => {
     schedulerData.prev();
@@ -251,7 +292,7 @@ function ReactJSchedule(props) {
             </Typography.Title>
           </Row>
           <Row>
-            <Col span={20}>
+            <Col span={22}>
               <SchedulerGrid schedulerData={state.viewModel}
                 prevClick={prevClick}
                 nextClick={nextClick}
@@ -272,7 +313,7 @@ function ReactJSchedule(props) {
                 toggleExpandFunc={toggleExpandFunc}
               />
             </Col>
-            <Col span={4}>
+            <Col span={2}>
               {state.viewModel.isEventPerspective ? (
                 <ResourceList schedulerData={state.viewModel} newEvent={newEvent} resourceDndSource={resourceDndSource} />
               ) : (

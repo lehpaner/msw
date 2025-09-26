@@ -10,8 +10,8 @@
     </icon>
     <properties>
         <propertyGroup caption="General">
-            <property key="valueAttribute" type="attribute" required="false">
-                <caption>Value attribute</caption>
+            <property key="headerTitleAttibute" type="attribute" required="false">
+                <caption>Title attribute</caption>
                 <description>The attribute that contains the reactjschedule value</description>
                 <attributeTypes>
                     <attributeType name="String"/>
@@ -21,88 +21,45 @@
                     <attributeType name="Long"/>
                 </attributeTypes>
             </property>
-            <property key="reactjscheduleValue" type="string" required="false">
-                <caption>Default value</caption>
+            <property key="headerTitleValue" type="string" required="false">
+                <caption>Title value</caption>
                 <description>The reactjschedule value shown when no value is provided via the attribute</description>
             </property>
         </propertyGroup>
         <propertyGroup caption="Data source">
-                <property key="databaseDataSource" type="datasource" isList="true" required="false">
+                <property key="scheduleDataSource" type="datasource" isList="true" required="true">
                     <caption>Events</caption>
-                    <description />
+                    <description>Event items list from database</description>
                 </property>
-                <property key="titleType" type="enumeration" defaultValue="attribute">
-                    <caption>Title type</caption>
-                    <description>Choose between an attribute or an expression for the title</description>
-                    <enumerationValues>
-                        <enumerationValue key="attribute">Attribute</enumerationValue>
-                        <enumerationValue key="expression">Expression</enumerationValue>
-                    </enumerationValues>
-                </property>
-                <property key="titleAttribute" type="attribute" dataSource="databaseDataSource" required="false">
-                    <caption>Title attribute</caption>
-                    <description>Select an attribute that contains the event title</description>
-                    <attributeTypes>
-                        <attributeType name="String" />
-                    </attributeTypes>
-                </property>
-                <property key="titleExpression" type="expression" dataSource="databaseDataSource" required="false">
-                    <caption>Title expression</caption>
-                    <description>Expression that results in the event title</description>
-                    <returnType type="String" />
-                </property>
-                <property key="allDayAttribute" type="attribute" dataSource="databaseDataSource" required="false">
-                    <caption>All day attribute</caption>
-                    <description />
-                    <attributeTypes>
-                        <attributeType name="Boolean" />
-                    </attributeTypes>
-                </property>
-                <property key="startAttribute" type="attribute" dataSource="databaseDataSource" required="false">
-                    <caption>Start attribute</caption>
-                    <description />
-                    <attributeTypes>
-                        <attributeType name="DateTime" />
-                    </attributeTypes>
-                </property>
-                <property key="endAttribute" type="attribute" dataSource="databaseDataSource" required="false">
-                    <caption>End attribute</caption>
-                    <description />
-                    <attributeTypes>
-                        <attributeType name="DateTime" />
-                    </attributeTypes>
-                </property>
-                <property key="eventColor" type="attribute" dataSource="databaseDataSource" required="false">
-                    <caption>Color attribute</caption>
-                    <description>Attribute containing a valid HTML color eg: red #FF0000 rgb(250,10,20) rgba(10,10,10, 0.5)</description>
-                    <attributeTypes>
-                        <attributeType name="Enum" />
-                        <attributeType name="String" />
-                    </attributeTypes>
-                </property>
-                <property key="startDateAttribute" type="attribute" dataSource="databaseDataSource" required="false">
-                    <caption>Start date attribute</caption>
-                    <description>The start date that should be shown in the view</description>
-                    <attributeTypes>
-                        <attributeType name="DateTime" />
-                    </attributeTypes>
+                <property key="scheduleRowsDataSource" type="datasource" isList="true" required="true">
+                    <caption>Event rows</caption>
+                    <description>List of rows loaded as Y</description>
                 </property>
         </propertyGroup>
+
         <propertyGroup caption="Display">
-            <property key="bootstrapStyle" type="enumeration" defaultValue="default">
+             <property key="calendarDate" type="string" required="false">
+                <caption>Calendar date:</caption>
+                <description>Defined current date on calendar</description>
+            </property>
+            <property key="calendarView" type="enumeration" defaultValue="month">
                 <caption>ReactJSchedule style</caption>
                 <description>The appearance of the reactjschedule</description>
                 <enumerationValues>
-                    <enumerationValue key="default">Default</enumerationValue>
-                    <enumerationValue key="primary">Primary</enumerationValue>
-                    <enumerationValue key="success">Success</enumerationValue>
-                    <enumerationValue key="info">Info</enumerationValue>
-                    <enumerationValue key="inverse">Inverse</enumerationValue>
-                    <enumerationValue key="warning">Warning</enumerationValue>
-                    <enumerationValue key="danger">Danger</enumerationValue>
+                    <enumerationValue key="day">Day</enumerationValue>
+                    <enumerationValue key="week">Week</enumerationValue>
+                    <enumerationValue key="month">Month</enumerationValue>
+                    <enumerationValue key="quarter">Quarter</enumerationValue>
+                    <enumerationValue key="year">Year</enumerationValue>
+                    <enumerationValue key="custom">Custom</enumerationValue>
                 </enumerationValues>
             </property>
-            <property key="reactjscheduleType" type="enumeration" required="true" defaultValue="badge">
+            <property key="calendarDateFormat" type="string" required="false">
+                <caption>Date format:</caption>
+                <description>Defined format for display date</description>
+            </property>
+
+            <property key="constraintsRender" type="enumeration" required="true" defaultValue="badge">
                 <caption>Type</caption>
                 <description>Render it as either a badge or a color label</description>
                 <enumerationValues>

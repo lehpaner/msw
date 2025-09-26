@@ -1,0 +1,10 @@
+/* eslint-disable */
+import React, { useEffect, useReducer, useState, useCallback, createElement } from 'react';
+
+function TaskItem({ task, isDragging, connectDragSource, connectDragPreview }) {
+  const dragContent = <li style={{ color: 'red', fontWeight: 'bold', fontSize: '20px', listStyle: 'none' }}>{task.name}</li>;
+
+  return isDragging ? null : <>{connectDragPreview(connectDragSource(dragContent))}</>;
+}
+
+export default TaskItem;
